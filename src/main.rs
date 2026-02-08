@@ -22,6 +22,7 @@ use microbit::{
 }; 
 
 // Docs: https://docs.rs/lsm303agr/1.1.0/lsm303agr/
+// used to talk to the IMU and get acceleration measurements
 use lsm303agr::{
     Acceleration, 
     Lsm303agr
@@ -37,6 +38,7 @@ fn main() -> ! {
     let _board = Board::take().unwrap();
     let mut timer = Timer::new(_board.TIMER0);
     let mut display = Display::new(_board.display_pins);
+    let mut fine_mode = false; // default mode is coarse mode
 
     // set up the i2c - it contains a TWIM object.
     // Based on https://docs.rust-embedded.org/discovery-mb2/12-i2c/using-a-driver.html
@@ -56,7 +58,8 @@ fn main() -> ! {
     // TBD
 
     // default display - shows a dot in the middle
-    let level = [
+    // the dot will move depending on how the board is held.
+    let level_default = [
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 1u8, 0u8, 0u8],
@@ -67,7 +70,7 @@ fn main() -> ! {
     // loop
     loop {
         // placeholder: show the item
-        display.show(&mut timer, level, 1000);
+        display.show(&mut timer, level_default, 200); // refresh every 200 ms
         rprintln!("Level");
     
         // TBD
