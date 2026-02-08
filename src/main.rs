@@ -55,6 +55,7 @@ fn main() -> ! {
     };
 
     // set up the sensor using the i2c
+    // Based on 
     // https://docs.rs/lsm303agr/1.1.0/lsm303agr/
     // https://docs.rs/lsm303agr/1.1.0/lsm303agr/struct.Acceleration.html
     let mut sensor = Lsm303agr::new_with_i2c(i2c);
@@ -63,7 +64,7 @@ fn main() -> ! {
         &mut timer, // use the board timer
         AccelMode::Normal, // use normal acceleration mode
         AccelOutputDataRate::Hz50, // output data rate is 50Hz
-    );
+    ).unwrap();
 
     // TBD
 
@@ -86,16 +87,31 @@ fn main() -> ! {
         [0u8, 0u8, 0u8, 0u8, 0u8],
     ];
 
+    // set the current display - this will change
     let mut current_display = level_default;
 
     // loop
     loop {
         // placeholder: show the item
-        display.show(&mut timer, level_default, 200); // refresh every 200 ms
-        rprintln!("Level");
+        display.show(&mut timer, current_display, 200); // refresh every 200 ms
     
         // TBD
         // if the B button is pressed, switch to fine mode
         // if the A button is pressed, return to coarse mode
+        if sensor.accel_status().unwrap().xyz_new_data() {
+            // get the x, y, and z accel in mG
+            let data = sensor.acceleration().unwrap();
+            let x_mg = data.x_mg();
+            let y_mg = data.y_mg();
+            let z_mg = data.z_mg();
+
+            // light up the display when the board is not upside down
+            if z_mg > 0 {
+                rprintln!("Upside down board");
+                current_display = blank_display;
+            } else {
+                current_display = level_default;
+            }
+        }
     }
 }
