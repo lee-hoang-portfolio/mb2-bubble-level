@@ -24,6 +24,8 @@ use microbit::{
 // Docs: https://docs.rs/lsm303agr/1.1.0/lsm303agr/
 // used to talk to the IMU and get acceleration measurements
 use lsm303agr::{
+    AccelMode,
+    AccelOutputDataRate,
     Acceleration, 
     Lsm303agr
 };
@@ -53,8 +55,15 @@ fn main() -> ! {
     };
 
     // set up the sensor using the i2c
+    // https://docs.rs/lsm303agr/1.1.0/lsm303agr/
+    // https://docs.rs/lsm303agr/1.1.0/lsm303agr/struct.Acceleration.html
     let mut sensor = Lsm303agr::new_with_i2c(i2c);
-    sensor.init().unwrap();
+    sensor.init().unwrap(); // initialize the sensor
+    sensor.set_accel_mode_and_odr(
+        &mut timer, // use the board timer
+        AccelMode::Normal, // use normal acceleration mode
+        AccelOutputDataRate::Hz50, // output data rate is 50Hz
+    );
 
     // TBD
 
@@ -86,5 +95,7 @@ fn main() -> ! {
         rprintln!("Level");
     
         // TBD
+        // if the B button is pressed, switch to fine mode
+        // if the A button is pressed, return to coarse mode
     }
 }
