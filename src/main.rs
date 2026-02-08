@@ -39,6 +39,7 @@ fn main() -> ! {
     let mut timer = Timer::new(_board.TIMER0);
     let mut display = Display::new(_board.display_pins);
     let mut fine_mode = false; // default mode is coarse mode
+    
 
     // set up the i2c - it contains a TWIM object.
     // Based on https://docs.rust-embedded.org/discovery-mb2/12-i2c/using-a-driver.html
@@ -66,6 +67,17 @@ fn main() -> ! {
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
     ];
+
+    // blank display - use when the board is upside down
+    let blank_display = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let mut current_display = level_default;
 
     // loop
     loop {
