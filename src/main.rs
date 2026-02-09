@@ -75,6 +75,7 @@ fn main() -> ! {
         [0u8, 0u8, 0u8, 0u8, 0u8],
     ];
 
+    // board is turned to the left
     let board_left_1 = [
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
@@ -91,6 +92,7 @@ fn main() -> ! {
         [0u8, 0u8, 0u8, 0u8, 0u8],
     ];
 
+    // board is turned to the right
     let board_right_1 = [
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
@@ -107,6 +109,7 @@ fn main() -> ! {
         [0u8, 0u8, 0u8, 0u8, 0u8],
     ];
 
+    // board is tilted up
     let board_up_1 = [
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
@@ -123,6 +126,7 @@ fn main() -> ! {
         [0u8, 0u8, 0u8, 0u8, 0u8],
     ];
 
+    // board is tilted down
     let board_down_1 = [
         [0u8, 0u8, 1u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
