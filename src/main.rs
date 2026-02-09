@@ -26,7 +26,6 @@ use microbit::{
 use lsm303agr::{
     AccelMode,
     AccelOutputDataRate,
-    Acceleration, 
     Lsm303agr
 };
 
@@ -40,7 +39,7 @@ fn main() -> ! {
     let _board = Board::take().unwrap();
     let mut timer = Timer::new(_board.TIMER0);
     let mut display = Display::new(_board.display_pins);
-    let mut fine_mode = false; // default mode is coarse mode
+    let mut fine_mode = false; // default mode is coarse mode - if true, adjust the limits
     
 
     // set up the i2c - it contains a TWIM object.
@@ -66,14 +65,76 @@ fn main() -> ! {
         AccelOutputDataRate::Hz50, // output data rate is 50Hz
     ).unwrap();
 
-    // TBD
-
     // default display - shows a dot in the middle
     // the dot will move depending on how the board is held.
     let level_default = [
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 1u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let board_left_1 = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 1u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let board_left_2 = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 1u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let board_right_1 = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [1u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let board_right_2 = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 1u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let board_up_1 = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 1u8, 0u8, 0u8],
+    ];
+
+    let board_up_2 = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 1u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let board_down_1 = [
+        [0u8, 0u8, 1u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+    ];
+
+    let board_down_2 = [
+        [0u8, 0u8, 0u8, 0u8, 0u8],
+        [0u8, 0u8, 1u8, 0u8, 0u8],
+        [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
     ];
@@ -106,12 +167,54 @@ fn main() -> ! {
             let z_mg = data.z_mg();
 
             // light up the display when the board is not upside down
-            if z_mg > 0 {
+            // blank the display otherwise
+            if z_mg > 0 { // z is positive
                 rprintln!("Upside down board");
                 current_display = blank_display;
-            } else {
-                current_display = level_default;
+            } else { // adjust LED based on x and y
+
+                // board is in the center
+                if (x_mg >= -100 && x_mg < 100) || (y_mg >= -100 && y_mg < 100) {
+                    current_display = level_default;
+                }
+                
+                // tilting board to the left - light is on the right
+                if x_mg >= -300 && x_mg < -100 {
+                    current_display = board_left_2
+                }
+
+                if x_mg >= -500 && x_mg < -300 {
+                    current_display = board_left_1
+                }
+
+                // tilting board to the right
+                if x_mg >= 100 && x_mg < 300 {
+                    current_display = board_right_2
+                }
+
+                if x_mg >= 300 && x_mg <= 500 {
+                    current_display = board_right_1
+                }
+
+                // tilting the board up
+                if y_mg >= 100 && y_mg < 300 {
+                    current_display = board_up_2
+                }
+
+                if y_mg >= 300 && y_mg <= 500 {
+                    current_display = board_up_1
+                }
+
+                // tilting the board down
+                if y_mg >= -300 && y_mg < -100 {
+                    current_display = board_down_2
+                }
+
+                if y_mg >= -500 && y_mg < -300 {
+                    current_display = board_down_1
+                }
+
             }
-        }
-    }
-}
+        } // end sensor if statement
+    } // end loop
+} // end main
