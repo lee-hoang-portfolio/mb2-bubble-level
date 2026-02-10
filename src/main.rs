@@ -69,85 +69,8 @@ fn main() -> ! {
         AccelOutputDataRate::Hz50, // output data rate is 50Hz
     ).unwrap();
 
-    // default display - shows a dot in the middle
-    // the dot will move depending on how the board is held.
-    let level_default = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 1u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
-    // board is turned to the left
-    let board_left_1 = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 1u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
-    let board_left_2 = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 1u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
-    // board is turned to the right
-    let board_right_1 = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [1u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
-    let board_right_2 = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 1u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
-    // board is tilted up
-    let board_up_1 = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 1u8, 0u8, 0u8],
-    ];
-
-    let board_up_2 = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 1u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
-    // board is tilted down
-    let board_down_1 = [
-        [0u8, 0u8, 1u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
-    let board_down_2 = [
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 1u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-        [0u8, 0u8, 0u8, 0u8, 0u8],
-    ];
-
     // blank display - use when the board is upside down
+    // this is also the default configuration
     let blank_display = [
         [0u8, 0u8, 0u8, 0u8, 0u8],
         [0u8, 0u8, 0u8, 0u8, 0u8],
@@ -157,7 +80,11 @@ fn main() -> ! {
     ];
 
     // set the current display - this will change
-    let mut current_display = level_default;
+    let mut current_display = blank_display;
+
+    // set the indices of the LED to light up
+    let mut led_x = 2; // middle row
+    let mut led_y = 2; // middle column
 
     // Define the buttons
     // if the B button is pressed, switch to fine mode - more sensitive measurements
@@ -182,6 +109,8 @@ fn main() -> ! {
         if sensor.accel_status().unwrap().xyz_new_data() {
             // get the x, y, and z accel in mG
             // mG values are unscaled values x 4. 
+            // https://doc.rust-lang.org/nightly/core/primitive.f32.html#impl-From%3Ci16%3E-for-f32
+            // https://docs.rs/lsm303agr/1.1.0/lsm303agr/struct.Acceleration.html#method.x_mg
             let data = sensor.acceleration().unwrap();
             let x_mg: f32 = (data.x_unscaled() * 4).into(); // unscaled data is i16 and can be converted to f32
             let y_mg: f32 = (data.y_unscaled() * 4).into();
@@ -189,7 +118,6 @@ fn main() -> ! {
 
             // Toggle how sensitive the "level" is to movement
             if left_button.is_low().unwrap() { // coarse mode
-                
                 fine_mode = false;
                 coarse_mode = true;
 
@@ -213,6 +141,7 @@ fn main() -> ! {
                 t_right = 50.0;
             }  
 
+            // DEBUG: check mode and acceleration measurements
             rprintln!("fine mode: {}, coarse mode: {}", fine_mode, coarse_mode);
             rprintln!("x_mg: {}, y_mg: {}, z_mg: {}", x_mg, y_mg, z_mg);
 
@@ -223,46 +152,49 @@ fn main() -> ! {
                 current_display = blank_display;
             } else { // adjust LED based on x and y
 
-                // board is in the center
-                if (x_mg >= t_center_1 && x_mg < t_center_2) && (y_mg >= t_center_1 && y_mg < t_center_2) {
-                    current_display = level_default;
-                }
-                
-                // tilting board to the left - light is on the right
-                if x_mg >= t_left_n && x_mg < t_center_1 {
-                    current_display = board_left_2
+                // determine the index of the LED to light up based on ranges
+
+                // ** SET THE X INDEX **
+                // X coord is near the left edge or falling off
+                if (x_mg >= t_left && x_mg < t_left_n) || (x_mg < t_left) {
+                    led_x = 4;
+                // X coord is on the left but closer to the center
+                } else if x_mg >= t_left_n && x_mg < t_center_1 {
+                    led_x = 3;
+                // X coord is in the center range
+                } else if x_mg >= t_center_1 && x_mg < t_center_2 {
+                    led_x = 2;
+                // X coord is on the right but closer to the center
+                } else if x_mg >= t_center_2 && x_mg < t_right_n {
+                    led_x = 1;
+                // X coord is near the right edge or falling off
+                } else if (x_mg >= t_right_n && x_mg <= t_right) || (x_mg > t_right) {
+                    led_x = 0;
                 }
 
-                if (x_mg >= t_left && x_mg < t_left_n) || (x_mg < t_left) { // clamp values
-                    current_display = board_left_1
+                // ** SET THE Y INDEX **
+                // Y coord is near the left edge or falling off
+                if (y_mg >= t_left && y_mg < t_left_n) || (y_mg < t_left) {
+                    led_y = 0;
+                // Y coord is on the left but closer to the center
+                } else if y_mg >= t_left_n && y_mg < t_center_1 {
+                    led_y = 1;
+                // Y coord is in the center range
+                } else if y_mg >= t_center_1 && y_mg < t_center_2 {
+                    led_y = 2;
+                // Y coord is on the right but closer to the center
+                } else if y_mg >= t_center_2 && y_mg < t_right_n {
+                    led_y = 3;
+                // Y coord is near the right edge or falling off
+                } else if (y_mg >= t_right_n && y_mg <= t_right) || (y_mg > t_right) {
+                    led_y = 4;
                 }
 
-                // tilting board to the right
-                if x_mg >= t_center_2 && x_mg < t_right_n {
-                    current_display = board_right_2
-                }
+                // clear the display
+                current_display = blank_display;
 
-                if (x_mg >= t_right_n && x_mg <= t_right) || (x_mg > t_right) { // clamp values
-                    current_display = board_right_1
-                }
-
-                // tilting the board up
-                if y_mg >= t_center_2 && y_mg < t_right_n {
-                    current_display = board_up_2
-                }
-
-                if (y_mg >= t_right_n && y_mg <= t_right) || (y_mg > t_right) { // clamp values
-                    current_display = board_up_1
-                }
-
-                // tilting the board down
-                if y_mg >= t_left_n && y_mg < t_center_1 {
-                    current_display = board_down_2
-                }
-
-                if (y_mg >= t_left && y_mg < t_left_n) || (y_mg < t_left) { // clamp values
-                    current_display = board_down_1
-                }
+                // light up the LED based on the above checks.
+                current_display[led_y][led_x] = 1;
 
             }
         } // end sensor if statement
