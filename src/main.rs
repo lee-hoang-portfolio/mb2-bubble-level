@@ -21,6 +21,10 @@ use microbit::{
     }
 }; 
 
+// Used for manipulating the buttons
+// Docs: https://docs.rs/embedded-hal/1.0.0/embedded_hal/index.html
+use embedded_hal::digital::InputPin;
+
 // Docs: https://docs.rs/lsm303agr/1.1.0/lsm303agr/
 // used to talk to the IMU and get acceleration measurements
 use lsm303agr::{
@@ -40,7 +44,7 @@ fn main() -> ! {
     let mut timer = Timer::new(_board.TIMER0);
     let mut display = Display::new(_board.display_pins);
     let mut fine_mode = false; // default mode is coarse mode - if true, adjust the limits
-    
+    let mut coarse_mode = true;
 
     // set up the i2c - it contains a TWIM object.
     // Based on https://docs.rust-embedded.org/discovery-mb2/12-i2c/using-a-driver.html
@@ -155,20 +159,61 @@ fn main() -> ! {
     // set the current display - this will change
     let mut current_display = level_default;
 
+    // Define the buttons
+    // if the B button is pressed, switch to fine mode - more sensitive measurements
+    // if the A button is pressed, return to coarse mode
+    let mut left_button = _board.buttons.button_a;
+    let mut right_button = _board.buttons.button_b;
+
+    // define the thresholds for coarse and fine mode
+    // the following values are for coarse mode
+    let mut t_left = -500;
+    let mut t_left_n = -300;
+    let mut t_center_1 = -100;
+    let mut t_center_2 = 100;
+    let mut t_right_n = 300;
+    let mut t_right = 500;
+
     // loop
     loop {
-        // placeholder: show the item
+        // show the display
         display.show(&mut timer, current_display, 200); // refresh every 200 ms
-    
-        // TBD
-        // if the B button is pressed, switch to fine mode
-        // if the A button is pressed, return to coarse mode
+ 
         if sensor.accel_status().unwrap().xyz_new_data() {
             // get the x, y, and z accel in mG
             let data = sensor.acceleration().unwrap();
             let x_mg = data.x_mg();
             let y_mg = data.y_mg();
-            let z_mg = data.z_mg();
+            let z_mg = data.z_mg(); 
+
+            // Toggle how sensitive the "level" is to movement
+            if left_button.is_low().unwrap() { // coarse mode
+                
+                fine_mode = false;
+                coarse_mode = true;
+
+                // adjust thresholds
+                t_left = -500;
+                t_left_n = -300;
+                t_center_1 = -100;
+                t_center_2 = 100;
+                t_right_n = 300;
+                t_right = 500;
+            } else if right_button.is_low().unwrap() {
+                coarse_mode = false;
+                fine_mode = true;
+
+                // adjust thresholds by dividing by 10
+                t_left = -50;
+                t_left_n = -30;
+                t_center_1 = -10;
+                t_center_2 = 10;
+                t_right_n = 30;
+                t_right = 50;
+            }  
+
+            rprintln!("fine mode: {}, coarse mode: {}", fine_mode, coarse_mode);
+            rprintln!("x_mg: {}, y_mg: {}, z_mg: {}", x_mg, y_mg, z_mg);
 
             // light up the display when the board is not upside down
             // blank the display otherwise
@@ -178,43 +223,43 @@ fn main() -> ! {
             } else { // adjust LED based on x and y
 
                 // board is in the center
-                if (x_mg >= -100 && x_mg < 100) || (y_mg >= -100 && y_mg < 100) {
+                if (x_mg >= t_center_1 && x_mg < t_center_2) && (y_mg >= t_center_1 && y_mg < t_center_2) {
                     current_display = level_default;
                 }
                 
                 // tilting board to the left - light is on the right
-                if x_mg >= -300 && x_mg < -100 {
+                if x_mg >= t_left_n && x_mg < t_center_1 {
                     current_display = board_left_2
                 }
 
-                if x_mg >= -500 && x_mg < -300 {
+                if (x_mg >= t_left && x_mg < t_left_n) || (x_mg < t_left) { // clamp values
                     current_display = board_left_1
                 }
 
                 // tilting board to the right
-                if x_mg >= 100 && x_mg < 300 {
+                if x_mg >= t_center_2 && x_mg < t_right_n {
                     current_display = board_right_2
                 }
 
-                if x_mg >= 300 && x_mg <= 500 {
+                if (x_mg >= t_right_n && x_mg <= t_right) || (x_mg > t_right) { // clamp values
                     current_display = board_right_1
                 }
 
                 // tilting the board up
-                if y_mg >= 100 && y_mg < 300 {
+                if y_mg >= t_center_2 && y_mg < t_right_n {
                     current_display = board_up_2
                 }
 
-                if y_mg >= 300 && y_mg <= 500 {
+                if (y_mg >= t_right_n && y_mg <= t_right) || (y_mg > t_right) { // clamp values
                     current_display = board_up_1
                 }
 
                 // tilting the board down
-                if y_mg >= -300 && y_mg < -100 {
+                if y_mg >= t_left_n && y_mg < t_center_1 {
                     current_display = board_down_2
                 }
 
-                if y_mg >= -500 && y_mg < -300 {
+                if (y_mg >= t_left && y_mg < t_left_n) || (y_mg < t_left) { // clamp values
                     current_display = board_down_1
                 }
 
