@@ -167,12 +167,12 @@ fn main() -> ! {
 
     // define the thresholds for coarse and fine mode
     // the following values are for coarse mode
-    let mut t_left = -500;
-    let mut t_left_n = -300;
-    let mut t_center_1 = -100;
-    let mut t_center_2 = 100;
-    let mut t_right_n = 300;
-    let mut t_right = 500;
+    let mut t_left = -500.0;
+    let mut t_left_n = -300.0;
+    let mut t_center_1 = -100.0;
+    let mut t_center_2 = 100.0;
+    let mut t_right_n = 300.0;
+    let mut t_right = 500.0;
 
     // loop
     loop {
@@ -181,10 +181,11 @@ fn main() -> ! {
  
         if sensor.accel_status().unwrap().xyz_new_data() {
             // get the x, y, and z accel in mG
+            // mG values are unscaled values x 4. 
             let data = sensor.acceleration().unwrap();
-            let x_mg = data.x_mg();
-            let y_mg = data.y_mg();
-            let z_mg = data.z_mg(); 
+            let x_mg: f32 = (data.x_unscaled() * 4).into(); // unscaled data is i16 and can be converted to f32
+            let y_mg: f32 = (data.y_unscaled() * 4).into();
+            let z_mg: f32 = (data.z_unscaled() * 4).into(); 
 
             // Toggle how sensitive the "level" is to movement
             if left_button.is_low().unwrap() { // coarse mode
@@ -193,23 +194,23 @@ fn main() -> ! {
                 coarse_mode = true;
 
                 // adjust thresholds
-                t_left = -500;
-                t_left_n = -300;
-                t_center_1 = -100;
-                t_center_2 = 100;
-                t_right_n = 300;
-                t_right = 500;
+                t_left = -500.0;
+                t_left_n = -300.0;
+                t_center_1 = -100.0;
+                t_center_2 = 100.0;
+                t_right_n = 300.0;
+                t_right = 500.0;
             } else if right_button.is_low().unwrap() {
                 coarse_mode = false;
                 fine_mode = true;
 
                 // adjust thresholds by dividing by 10
-                t_left = -50;
-                t_left_n = -30;
-                t_center_1 = -10;
-                t_center_2 = 10;
-                t_right_n = 30;
-                t_right = 50;
+                t_left = -50.0;
+                t_left_n = -30.0;
+                t_center_1 = -10.0;
+                t_center_2 = 10.0;
+                t_right_n = 30.0;
+                t_right = 50.0;
             }  
 
             rprintln!("fine mode: {}, coarse mode: {}", fine_mode, coarse_mode);
@@ -217,7 +218,7 @@ fn main() -> ! {
 
             // light up the display when the board is not upside down
             // blank the display otherwise
-            if z_mg > 0 { // z is positive
+            if z_mg > 0.0 { // z is positive
                 rprintln!("Upside down board");
                 current_display = blank_display;
             } else { // adjust LED based on x and y
