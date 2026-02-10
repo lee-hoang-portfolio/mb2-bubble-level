@@ -15,7 +15,15 @@ I created a Microbit V2 program to simulate a [bubble level](https://en.wikipedi
 
 # How it went
 
-TBD
+The project was not too difficult. The main difficulties lay in the following: 
+
+1) Ensuring that calculations used floating point numbers instead of integers. 
+2) Having clean and easy to understand code for the coarse and fine modes.
+3) Avoiding duplicate code.
+
+## Highlights
+
+It was fun watching the level point move around as I shifted the board's orientation. 
 
 # Observations
 
