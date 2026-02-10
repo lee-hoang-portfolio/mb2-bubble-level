@@ -155,37 +155,37 @@ fn main() -> ! {
                 // determine the index of the LED to light up based on ranges
 
                 // ** SET THE X INDEX **
-                // X coord is near the left edge or falling off
+                // board is tilted to the left
                 if (x_mg >= t_left && x_mg < t_left_n) || (x_mg < t_left) {
                     led_x = 4;
-                // X coord is on the left but closer to the center
+                // board is tilted slightly to the left
                 } else if x_mg >= t_left_n && x_mg < t_center_1 {
                     led_x = 3;
-                // X coord is in the center range
+                // board is flat (neither tilted left or right)
                 } else if x_mg >= t_center_1 && x_mg < t_center_2 {
                     led_x = 2;
-                // X coord is on the right but closer to the center
+                // board is tilted slightly to the right
                 } else if x_mg >= t_center_2 && x_mg < t_right_n {
                     led_x = 1;
-                // X coord is near the right edge or falling off
+                // board is tilted to the right
                 } else if (x_mg >= t_right_n && x_mg <= t_right) || (x_mg > t_right) {
                     led_x = 0;
                 }
 
                 // ** SET THE Y INDEX **
-                // Y coord is near the left edge or falling off
+                // board is tilted downward
                 if (y_mg >= t_left && y_mg < t_left_n) || (y_mg < t_left) {
                     led_y = 0;
-                // Y coord is on the left but closer to the center
+                // board is tilted slightly downward
                 } else if y_mg >= t_left_n && y_mg < t_center_1 {
                     led_y = 1;
-                // Y coord is in the center range
+                // board is flat (neither tilted up or down)
                 } else if y_mg >= t_center_1 && y_mg < t_center_2 {
                     led_y = 2;
-                // Y coord is on the right but closer to the center
+                // board is tilted slightly upward
                 } else if y_mg >= t_center_2 && y_mg < t_right_n {
                     led_y = 3;
-                // Y coord is near the right edge or falling off
+                // board is tilted upward
                 } else if (y_mg >= t_right_n && y_mg <= t_right) || (y_mg > t_right) {
                     led_y = 4;
                 }
