@@ -5,11 +5,14 @@
 // =================================================
 
 // for panic and printing functions
+// https://docs.rs/crate/rtt-target/0.6.0
+// https://docs.rs/panic-rtt-target/latest/panic_rtt_target/
 use panic_rtt_target as _;
 use rtt_target::{rprintln, rtt_init_print};
 
 // cortex_m_rt
 // used for defining the entry point
+// Docs: https://docs.rs/cortex-m-rt/0.7.5/cortex_m_rt/
 use cortex_m_rt::entry;
 
 // Microbit functions

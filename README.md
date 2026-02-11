@@ -39,7 +39,7 @@ It was fun watching the level point move around as I shifted the board's orienta
 
 # Observations
 
-As I played with the level and observed the level point moving around, I observed the following:
+As I played with the level and observed the level point moving around, I observed the following behaviors:
 
 ## Fine mode is very sensitive
 
