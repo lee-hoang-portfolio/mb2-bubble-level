@@ -45,7 +45,7 @@ fn main() -> ! {
         Twim::new(
             board.TWIM0,               // board twim
             board.i2c_internal.into(), // board's internal i2c pins
-            FREQUENCY_A::K100,          // frequency is 100 kbps
+            FREQUENCY_A::K100,         // frequency is 100 kbps
         )
     };
 
@@ -97,7 +97,7 @@ fn main() -> ! {
     let mut t_right_n = 300.0;
     let mut t_right = 500.0;
 
-    // loop
+    // main loop
     loop {
         // show the display
         display.show(&mut timer, current_display, 200); // refresh every 200 ms
@@ -113,6 +113,7 @@ fn main() -> ! {
             let z_mg: f32 = (data.z_unscaled() * 4).into();
 
             // Toggle how sensitive the "level" is to movement
+            // A button
             if left_button.is_low().unwrap() {
                 // coarse mode
                 // adjust thresholds
@@ -122,6 +123,7 @@ fn main() -> ! {
                 t_center_2 = 100.0;
                 t_right_n = 300.0;
                 t_right = 500.0;
+            // B Button
             } else if right_button.is_low().unwrap() {
                 // fine mode
                 // adjust thresholds by dividing by 10
