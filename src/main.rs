@@ -38,8 +38,6 @@ fn main() -> ! {
     let _board = Board::take().unwrap();
     let mut timer = Timer::new(_board.TIMER0);
     let mut display = Display::new(_board.display_pins);
-    let mut fine_mode = false; // default mode is coarse mode - if true, adjust the limits
-    let mut coarse_mode = true; // coarse mode is the default
 
     // set up the i2c - it contains a TWIM object.
     // Based on https://docs.rust-embedded.org/discovery-mb2/12-i2c/using-a-driver.html
@@ -115,9 +113,6 @@ fn main() -> ! {
             // Toggle how sensitive the "level" is to movement
             if left_button.is_low().unwrap() {
                 // coarse mode
-                fine_mode = false;
-                coarse_mode = true;
-
                 // adjust thresholds
                 t_left = -500.0;
                 t_left_n = -300.0;
@@ -127,9 +122,6 @@ fn main() -> ! {
                 t_right = 500.0;
             } else if right_button.is_low().unwrap() {
                 // fine mode
-                coarse_mode = false;
-                fine_mode = true;
-
                 // adjust thresholds by dividing by 10
                 t_left = -50.0;
                 t_left_n = -30.0;
@@ -140,8 +132,12 @@ fn main() -> ! {
             }
 
             // DEBUG: check mode and acceleration measurements
-            rprintln!("fine mode: {}, coarse mode: {}", fine_mode, coarse_mode);
-            rprintln!("x_mg: {}, y_mg: {}, z_mg: {}", x_mg, y_mg, z_mg);
+            rprintln!(
+                "Acceleration values: x_mg: {}, y_mg: {}, z_mg: {}",
+                x_mg,
+                y_mg,
+                z_mg
+            );
 
             // light up the display when the board is not upside down
             // blank the display otherwise
