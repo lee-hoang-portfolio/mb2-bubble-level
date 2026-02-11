@@ -52,6 +52,8 @@ fn main() -> ! {
     // set up the sensor using the i2c
     // Based on
     // https://docs.rs/lsm303agr/1.1.0/lsm303agr/
+    // https://docs.rs/lsm303agr/1.1.0/lsm303agr/enum.AccelMode.html
+    // https://docs.rs/lsm303agr/1.1.0/lsm303agr/enum.AccelOutputDataRate.html
     // https://docs.rs/lsm303agr/1.1.0/lsm303agr/struct.Acceleration.html
     let mut sensor = Lsm303agr::new_with_i2c(i2c);
     sensor.init().unwrap(); // initialize the sensor
