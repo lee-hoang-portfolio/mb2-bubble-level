@@ -27,7 +27,7 @@ Attach the Microbit v2 to your computer and run the program with the following c
 
 The project was not too difficult. The main difficulties lay in the following: 
 
-1) Ensuring that calculations used floating point numbers instead of integers. 
+1) Ensuring that calculations used floating point numbers instead of integers. To ensure that calculations used floating point numbers, I converted the acceleration measurements from signed integers to floating point numbers.
 2) Having clean and easy to understand code for the coarse and fine modes.
 3) Avoiding duplicate code.
 
@@ -41,7 +41,9 @@ As I played with the level and observed the level point moving around, I observe
 
 ## Fine mode is very sensitive
 
-When the level is in coarse mode, it is not very sensitive to movement and it is easy to get the level point to remain in the center. However, in fine mode, it is more difficult to keep the level point centered even when the board is held flat. The level point may move over the board repeatedly.
+When the level is in coarse mode, it is not very sensitive to movement and it is easy to get the level point to remain in the center. However, in fine mode, it is more difficult to keep the level point centered even when the board is held flat. 
+
+The level point may move over the board repeatedly.
 
 ## Program does not always run after plugging in the Microbit
 
