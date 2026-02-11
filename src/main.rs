@@ -138,7 +138,7 @@ fn main() -> ! {
                 t_right = 50.0;
             }
 
-            // DEBUG: check mode and acceleration measurements
+            // DEBUG: check acceleration measurements
             rprintln!(
                 "Acceleration values: x_mg: {}, y_mg: {}, z_mg: {}",
                 x_mg,
@@ -153,11 +153,11 @@ fn main() -> ! {
                 rprintln!("Upside down board");
                 current_display = blank_display;
             } else {
-                // adjust LED based on x and y
+                // adjust LED based on x and y acceleration values
 
                 // determine the index of the LED to light up based on ranges
 
-                // ** SET THE X INDEX **
+                // ** FIND THE COLUMN INDEX **
                 // board is tilted to the left
                 if (x_mg >= t_left && x_mg < t_left_n) || (x_mg < t_left) {
                     led_x = 4;
@@ -175,7 +175,7 @@ fn main() -> ! {
                     led_x = 0;
                 }
 
-                // ** SET THE Y INDEX **
+                // ** FIND THE ROW INDEX **
                 // board is tilted downward
                 if (y_mg >= t_left && y_mg < t_left_n) || (y_mg < t_left) {
                     led_y = 0;
