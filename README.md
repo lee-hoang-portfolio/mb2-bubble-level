@@ -19,7 +19,7 @@ Clone the project into a directory of your choice:
 
 `git clone https://github.com/lee-hoang-portfolio/mb2-bubble-level.git`
 
-Attach the Microbit v2 to your computer and run the program with the following command:
+Attach the Microbit v2 to your computer and inside the project directory, run the program with the following command:
 
 `cargo embed --release`
 
