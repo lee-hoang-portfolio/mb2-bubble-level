@@ -49,11 +49,11 @@ As I played with the level and observed the level point moving around, I observe
 
 When the level is in coarse mode, it is not very sensitive to movement and it is easy to get the level point to remain in the center. However, in fine mode, it is more difficult to keep the level point centered even when the board is held flat. 
 
-The level point may move over the board repeatedly.
+The level point may move over the board repeatedly even when the board is idle.
 
-## Program does not always run after plugging in the Microbit
+## Program does not run after plugging in the Microbit
 
-I observed that when I plugged my Microbit into the computer, the level program would not run unless I pressed the Reset button on the Microbit.  
+I observed that when I plugged my Microbit into the computer, the level program would not run unless I pressed the Reset button on the back of the Microbit. At this time, I do not know what is causing the issue.
 
 ## Multiple button presses required to change modes
 
