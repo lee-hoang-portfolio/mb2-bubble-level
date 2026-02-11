@@ -23,6 +23,10 @@ Attach the Microbit v2 to your computer and run the program with the following c
 
 `cargo embed --release`
 
+To run the program in debug mode, use the following command:
+
+`cargo embed`
+
 If you are running the program on WSL2, you will need to follow the steps in this [Microsoft article](https://learn.microsoft.com/en-us/windows/wsl/connect-usb) to set up `usbipd` and the steps in Section 3 of the [MB2 Discovery Book](https://docs.rust-embedded.org/discovery-mb2/03-setup/index.html) to set up `probe-rs` rules.
 
 # How it went
