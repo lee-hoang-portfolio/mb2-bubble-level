@@ -111,7 +111,7 @@ fn main() -> ! {
             // https://doc.rust-lang.org/nightly/core/primitive.f32.html#impl-From%3Ci16%3E-for-f32
             // https://docs.rs/lsm303agr/1.1.0/lsm303agr/struct.Acceleration.html#method.x_mg
             let data = sensor.acceleration().unwrap();
-            let x_mg: f32 = (data.x_unscaled() * 4).into(); // unscaled data is i16 and can be converted to f32
+            let x_mg: f32 = (data.x_unscaled() * 4).into(); // unscaled data is i16 and can be converted to f32. i32 cannot be converted to f32.
             let y_mg: f32 = (data.y_unscaled() * 4).into();
             let z_mg: f32 = (data.z_unscaled() * 4).into();
 
@@ -119,7 +119,7 @@ fn main() -> ! {
             // A button
             if left_button.is_low().unwrap() {
                 // coarse mode
-                // adjust thresholds
+                // use default thresholds
                 t_left = -500.0;
                 t_left_n = -300.0;
                 t_center_1 = -100.0;
