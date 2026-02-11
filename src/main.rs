@@ -35,16 +35,16 @@ fn main() -> ! {
     rtt_init_print!();
 
     // set up the board, timer, and display
-    let _board = Board::take().unwrap();
-    let mut timer = Timer::new(_board.TIMER0);
-    let mut display = Display::new(_board.display_pins);
+    let board = Board::take().unwrap();
+    let mut timer = Timer::new(board.TIMER0);
+    let mut display = Display::new(board.display_pins);
 
     // set up the i2c - it contains a TWIM object.
     // Based on https://docs.rust-embedded.org/discovery-mb2/12-i2c/using-a-driver.html
     let i2c = {
         Twim::new(
-            _board.TWIM0,               // board twim
-            _board.i2c_internal.into(), // board's internal i2c pins
+            board.TWIM0,               // board twim
+            board.i2c_internal.into(), // board's internal i2c pins
             FREQUENCY_A::K100,          // frequency is 100 kbps
         )
     };
@@ -85,8 +85,8 @@ fn main() -> ! {
     // Define the buttons
     // if the B button is pressed, switch to fine mode - more sensitive measurements
     // if the A button is pressed, return to coarse mode
-    let mut left_button = _board.buttons.button_a;
-    let mut right_button = _board.buttons.button_b;
+    let mut left_button = board.buttons.button_a;
+    let mut right_button = board.buttons.button_b;
 
     // define the thresholds for coarse and fine mode
     // the following values are for coarse mode
