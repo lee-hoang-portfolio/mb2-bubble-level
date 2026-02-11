@@ -13,6 +13,16 @@ I created a Microbit V2 program to simulate a [bubble level](https://en.wikipedi
 - Press the B button to enter fine mode. This makes the level point more sensitive to movement.
 - While in fine mode, press the A button to return to coarse mode.
 
+## How to use
+
+Clone the project into a directory of your choice:
+
+`git clone https://github.com/lee-hoang-portfolio/mb2-bubble-level.git`
+
+Attach the Microbit v2 to your computer and run the program with the following command:
+
+`cargo embed --release`
+
 # How it went
 
 The project was not too difficult. The main difficulties lay in the following: 
